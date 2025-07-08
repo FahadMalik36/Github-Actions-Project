@@ -1,4 +1,4 @@
-name: CICD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -6,7 +6,6 @@ on:
 
 jobs:
   compile:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -19,25 +18,25 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
+        server-id: github
+        settings-path: ${{ github.workspace }}
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
   security-check:
-
     runs-on: ubuntu-latest
+    needs: compile  # Wait for compile job first
 
     steps:
     - uses: actions/checkout@v4
     - name: Trivy Installation
-      run:  | 
-          sudo apt-get install wget apt-transport-https gnupg lsb-release
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-          sudo apt-get update -y
-          sudo apt-get install trivy -y
+      run: | 
+        sudo apt-get install wget apt-transport-https gnupg lsb-release
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+        echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update -y
+        sudo apt-get install trivy -y
   
     - name: Trivy FS Scan
       run: trivy fs --format table -o fs-report.json .
@@ -46,6 +45,7 @@ jobs:
       run: sudo apt install gitleaks -y
 
     - name: Gitleaks Code Scan
-       run: gitleaks detect -s . -r gitleaks-report.json -f json 
+      run: gitleaks detect -s . -r gitleaks-report.json -f json
+      # ^ Properly indented with space after colon
 
   
