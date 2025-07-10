@@ -40,7 +40,7 @@ jobs:
 
     - name: Install Trivy (Modern Method)
       run: |
-        # Install prerequisites
+      
         sudo apt-get update -y
         sudo apt-get install -y wget apt-transport-https gnupg lsb-release
         
@@ -58,10 +58,10 @@ jobs:
 
     - name: Run security scans
       run: |
-        # Run Trivy scan
-        trivy fs --security-checks vuln,secret --format json -o trivy-report.json . || echo "Trivy scan completed"
-        # Run Gitleaks scan
-        gitleaks detect -s . -r gitleaks-report.json -f json || echo "Gitleaks scan completed"
+            Run Trivy scan
+            trivy fs --security-checks vuln,secret --format json -o trivy-report.json . || echo "Trivy scan completed"
+            Run Gitleaks scan
+              gitleaks detect -s . -r gitleaks-report.json -f json || echo "Gitleaks scan completed"
       continue-on-error: true
 
     - name: Upload security reports
