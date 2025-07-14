@@ -10,13 +10,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Build with Maven
+
+      - name: Compile code
         run: mvn compile
 
   security-check:
@@ -48,14 +50,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Unit Test Cases
-        run: mvn test
+
+      - name: Build and Test
+        run: mvn clean package
+
+      - name: List built files
+        run: ls -l target/
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
@@ -70,7 +77,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Disabling shallow clones is recommended
+          fetch-depth: 0  # Full clone improves Sonar analysis
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -79,7 +86,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build project and run SonarQube scan
+      - name: Build project for analysis
         run: mvn package
 
       - name: SonarQube Scan
@@ -128,6 +135,7 @@ jobs:
           context: .app
           push: true
           tags: fahadmalik1/appbankapp:latest
+
 
 
 
