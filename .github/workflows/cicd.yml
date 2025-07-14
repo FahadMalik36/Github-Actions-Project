@@ -99,7 +99,7 @@ jobs:
 
   build_docker_image_and_push:
     runs-on: ubuntu-latest
-    needs: build_sonar_scan
+    needs: [test, build_sonar_scan]
 
     steps:
       - uses: actions/checkout@v4
@@ -115,18 +115,20 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Set up QEMU
+
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      -
-        name: Build and push
+
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
+          context: .app
           push: true
           tags: fahadmalik1/appbankapp:latest
+
 
 
       
